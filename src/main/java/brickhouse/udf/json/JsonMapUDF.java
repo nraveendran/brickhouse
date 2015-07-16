@@ -17,6 +17,8 @@ package brickhouse.udf.json;
  **/
 
 import brickhouse.udf.json.InspectorHandle.InspectorHandleFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hive.ql.exec.Description;
 import org.apache.hadoop.hive.ql.exec.UDFArgumentException;
 import org.apache.hadoop.hive.ql.metadata.HiveException;
@@ -50,6 +52,8 @@ import java.io.IOException;
 public class JsonMapUDF extends GenericUDF {
     private StringObjectInspector stringInspector;
     private InspectorHandle inspHandle;
+
+    static final Log LOG = LogFactory.getLog(JsonMapUDF.class.getName());
 
     @Override
     public ObjectInspector initialize(ObjectInspector[] arguments)
@@ -114,7 +118,8 @@ public class JsonMapUDF extends GenericUDF {
             return inspHandle.parseJson(jsonNode);
 
         } catch (JsonProcessingException e) {
-            throw new HiveException(e);
+            LOG.error("Error parsing " + e.getMessage());
+            return null;
         } catch (IOException e) {
             throw new HiveException(e);
         }
